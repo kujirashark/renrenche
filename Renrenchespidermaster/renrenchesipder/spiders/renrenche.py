@@ -12,19 +12,17 @@ class RenRenCheSipder(RedisSpider):
     domain_url = 'https://www.renrenche.com'
     # 设置过滤爬取的域名
     allowed_domains = ['www.renrenche.com']
-    # 二手车的url
-    #ershouche_url = 'https://www.renrenche.com/cd/ershouche/'
 
     def start_requests(self):
         yield Request(self.domain_url)
 
     # 解析所有城市
-    def parse(self,response):
+    def parse(self, response):
         res = Selector(response)
         city_url_list = res.xpath('//div[@class="area-city-letter"]/div/a[@class="province-item "]/@href')
         for city_url in city_url_list:
             city = city_url.extract()
-            yield Request(self.domain_url + city,callback=self.parse_brand)
+            yield Request(self.domain_url + city, callback=self.parse_brand)
 
     # 解析所有的品牌
     def parse_brand(self, response):
@@ -36,25 +34,29 @@ class RenRenCheSipder(RedisSpider):
 
     # 解析某个品牌下面的具体某辆车的页面
     def parse_page_url(self, response):
+        # 实例化管道
         item = MasterItem()
         res = Selector(response)
-        # page = res.xpath('/html/body/div[3]/div[6]/ul/li/a/text()').extract()[-1]
+        # 获取到页面的所有li的信息 用于下面的页码的判断
         li_list = res.xpath('//ul[@class="row-fluid list-row js-car-list"]/li')
         # 判断页面
         # 判断页面是否有li标签
         if li_list:
             for c in li_list:
+                # 获取页面的每个车的url 并且过滤掉有广告的那个a标签
                 one_car_url = c.xpath('./a[@class="thumbnail"]/@href').extract()
+                # 判断是否有这个url
                 if one_car_url:
                     item['url'] = self.domain_url + one_car_url[0]
                     yield item
 
             # 下一页信息
-            page = response.meta.get('page',2)
+            page = response.meta.get('page', 2)
+            #
             url = response.url
-            url = re.sub(r'p\d+','',url)
+            # 替换掉上面的结果出现../p1/p2/这样的结果我们只需要一个页面参数
+            url = re.sub(r'p\d+', '', url)
+            # 产生新的页面url
             car_info_url = url + 'p{page}/'
             # 回调 获取下一页
-            yield Request(car_info_url.format(page=page),meta={'page':page + 1},callback=self.parse_page_url)
-
-
+            yield Request(car_info_url.format(page=page), meta={'page': page + 1}, callback=self.parse_page_url)

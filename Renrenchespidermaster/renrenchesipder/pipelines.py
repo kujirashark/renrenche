@@ -12,6 +12,7 @@ class RenrenchesipderPipeline(object):
 class MasterPipeline(object):
 
     def __init__(self):
+        # 初始化连接数据的变量
         self.REDIS_HOST = settings['REDIS_HOST']
         self.REDIS_PORT = settings['REDIS_PORT']
         # 链接redis

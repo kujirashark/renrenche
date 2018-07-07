@@ -10,6 +10,7 @@ class RenRenCheSipder(RedisSpider):
 
     # 指定访问爬虫爬取urls队列
     reids_keys = 'renrenche:start_urls'
+    
     # 解析详情页
     def parse(self, response):
         res = Selector(response)
@@ -46,7 +47,9 @@ class RenRenCheSipder(RedisSpider):
         if res.xpath('//div[@class="info-recommend"]/div/img/@src'):
             # 车辆图片
             items['car_img'] = res.xpath('//div[@class="info-recommend"]/div/img/@src').extract()[0]
+        # 车辆所在城市
         items['city'] = res.xpath('//div[@rrc-event-scope="city"]/a[@class="choose-city"]/text()').extract()[0].strip()
+        # 车辆颜色
         items['color'] = res.xpath('//div[@class="card-table"]/table/tr/td[2]/text()').extract()[0]
 
         yield items

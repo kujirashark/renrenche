@@ -15,7 +15,7 @@ SPIDER_MODULES = ['renrenchesipder.spiders']
 NEWSPIDER_MODULE = 'renrenchesipder.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
+# USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -79,17 +79,20 @@ MONGODB_DB = 'renrenche'
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
 
-# 设置调度器
+# 启用Rides调度存储请求队列
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 
+# 不清除Redis队列、这样可以暂停/恢复 爬取
 SCHEDULER_PERSIST = True
 
+# 如果为True，则使用redis的'spop'进行操作。
+# 如果需要避免起始网址列表出现重复，这个选项非常有用。开启此选项urls必须通过sadd添加，否则会出现类型错误。
 REDIS_START_URLS_AS_SET = False
 
 # 去重队列
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 
-# 设置爬虫请求调度顺序
+# 使用优先级调度请求队列 ["scrapy_redis.queue.SpiderQueue" 此项是先入先出队列]
 SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderQueue"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
