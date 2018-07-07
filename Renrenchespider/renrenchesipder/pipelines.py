@@ -7,7 +7,6 @@ from renrenchesipder.items import RenrenchesipderItem
 class RenrenchesipderPipeline(object):
 
     def process_item(self, item, spider):
-
         return item
 
 

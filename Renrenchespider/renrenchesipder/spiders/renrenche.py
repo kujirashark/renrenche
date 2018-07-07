@@ -1,59 +1,20 @@
 from scrapy_redis.spiders import RedisSpider
-from scrapy import Selector, Request
-from scrapy.spiders import Spider
+from scrapy import Selector
 
 from renrenchesipder.items import RenrenchesipderItem
 
 
 class RenRenCheSipder(RedisSpider):
+    # 爬虫名称
     name = 'renrenche'
 
     # 指定访问爬虫爬取urls队列
     reids_keys = 'renrenche:start_urls'
-
-    # # 网站域名
-    # domain_url = 'https://www.renrenche.com'
-    # # 设置过滤爬取的域名
-    # allowed_domains = ['www.renrenche.com']
-    # # 二手车的url
-    # ershouche_url = 'https://www.renrenche.com/cd/ershouche/'
-    #
-    # def start_requests(self):
-    #     yield Request(self.ershouche_url)
-    #
-    # # 解析所有的品牌
-    # def parse(self, response):
-    #     res = Selector(response)
-    #     brand_url_list = res.xpath('//*[@id="brand_more_content"]/div/p/span/a')
-    #     for a in brand_url_list:
-    #         band_url = a.xpath('./@href').extract()[0]
-    #         yield Request(self.domain_url + band_url, callback=self.parse_page_url,
-    #                       meta={'band_url': band_url, 'page': 1})
-    #
-    # # 解析某个品牌下面的页面
-    # def parse_page_url(self, response):
-    #     res = Selector(response)
-    #     page = res.xpath('/html/body/div[3]/div[6]/ul/li/a/text()').extract()[-1]
-    #     d = res.xpath('//*[@id="search_list_wrapper"]/div/div/div[1]/ul/li')
-    #
-    #     band_url = response.meta.get('band_url')
-    #     for i in range(1, int(page) + 1):
-    #         yield Request(self.domain_url + band_url + 'p' + str(i), callback=self.parse_car_url)
-    #
-    # # 获取车辆详情的车辆url
-    # def parse_car_url(self, response):
-    #     res = Selector(response)
-    #     car_url = res.xpath('//*[@id="search_list_wrapper"]/div/div/div[1]/ul/li/a/@href')
-    #     for c in car_url:
-    #         one_car_url = c.extract()
-    #         yield Request(self.domain_url + one_car_url, callback=self.parse_car_info)
-
-    # 解析具体车辆详情页
-    # def parse_car_info(self, response):
-    def parse_car_info(self, response):
+    # 解析详情页
+    def parse(self, response):
         res = Selector(response)
         items = RenrenchesipderItem()
-        items['id'] = res.xpath('/html/body/@data-event-properties').extract()[0]
+        items['id'] = res.xpath('//div[@class="detail-wrapper"]/@data-encrypt-id').extract()[0]
         # 标题
         items['title'] = res.xpath('//div[@class="title"]/h1/text()').extract()[0]
         # 客户出价
