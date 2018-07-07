@@ -14,7 +14,4 @@ migrations
 log
 !rango_project
 virtual_venv
-
-*.DS_Store
 .DS_Store
-
