@@ -10,12 +10,14 @@ class RenRenCheSipder(RedisSpider):
 
     # 指定访问爬虫爬取urls队列
     reids_keys = 'renrenche:start_urls'
-    
+
     # 解析详情页
     def parse(self, response):
         res = Selector(response)
         items = RenrenchesipderItem()
-        items['id'] = res.xpath('//div[@class="detail-wrapper"]/@data-encrypt-id').extract()[0]
+        # if res.xpath('//div[@class="detail-wrapper"]/@data-encrypt-id'):
+        #     items['id'] = res.xpath('//div[@class="detail-wrapper"]/@data-encrypt-id').extract()[0]
+        items['id'] = response.url.split('/')[-1]
         # 标题
         items['title'] = res.xpath('//div[@class="title"]/h1/text()').extract()[0]
         # 客户出价
@@ -32,17 +34,18 @@ class RenRenCheSipder(RedisSpider):
         # 服务费
         items['service_fee'] = res.xpath('//*[@id="js-service-wrapper"]/div[1]/p[2]/strong/text()').extract()[0]
         # 服务项
-        items['service'] = res.xpath('//*[@id="js-box-service"]/table/tr/td/table/tr/td/text()').extract()
+        if res.xpath('//div[@id="js-box-service"]/table[@class="box-service"]/tr/td/table/tr/td/text()').extract():
+            items['service'] = res.xpath('//div[@id="js-box-service"]/table[@class="box-service"]/tr/td/table/tr/td/text()').extract()
         # 车辆上牌时间 里程 外迁信息
-        items['info'] = res.xpath('//*[@id="basic"]/div[2]/div[2]/div[1]/div[4]/ul/li/div/p/strong/text()').extract()
+        if res.xpath('//div[@class="row-fluid-wrapper"]/ul/li/div/p/strong/text()').extract():
+            items['info'] = res.xpath('//div[@class="row-fluid-wrapper"]/ul/li/div/p/strong/text()').extract()
         # 车辆排量
-        items['displacement'] = \
-            res.xpath('//*[@id="basic"]/div[2]/div[2]/div[1]/div[4]/ul/li[4]/div/strong/text()').extract()[0]
+        if res.xpath('//li[@class="span displacement"]/div/strong/text()'):
+            items['displacement'] = res.xpath('//li[@class="span displacement"]/div/strong/text()').extract()[0]
         # 车辆上牌城市
         items['registration_city'] = res.xpath('//*[@id="car-licensed"]/@licensed-city').extract()[0]
         # 车源号
-        items['options'] = \
-            res.xpath('//*[@id="basic"]/div[2]/div[2]/div[1]/div[5]/p/text()').extract()[0].strip().split("：")[1]
+        items['options'] = res.xpath('//p[@class="detail-car-id"]/text()').extract()[0].strip().split("：")[1]
         # 判断是都有图片
         if res.xpath('//div[@class="info-recommend"]/div/img/@src'):
             # 车辆图片

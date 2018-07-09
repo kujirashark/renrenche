@@ -52,10 +52,10 @@ DOWNLOAD_DELAY = 0.3
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 # 配置代理 USER_AENGT 和IP代理池
-DOWNLOADER_MIDDLEWARES = {
-    'renrenchesipder.middlewares.ProxyMiddleware': 543,
-    'renrenchesipder.middlewares.RandomUserAgent': 544,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#     'renrenchesipder.middlewares.ProxyMiddleware': 543,
+#     'renrenchesipder.middlewares.RandomUserAgent': 544,
+# }
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
